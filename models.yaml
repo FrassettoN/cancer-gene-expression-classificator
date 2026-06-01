@@ -1,0 +1,55 @@
+SVM:
+  batch_size: 8
+  num_epochs: 100
+  learningRate: 0.0001
+
+# KAN:
+#   batch_size: 8
+#   num_epochs: 100
+#   learningRate: 0.0001
+#   optimizer: Adam
+
+# FourierKAN:
+#   batch_size: 8
+#   num_epochs: 100
+#   learningRate: 0.0001
+#   optimizer: Adam
+
+MLP:
+  batch_size: 8
+  num_epochs: 100
+  learningRate: 0.0001
+  optimizer: Adam
+
+CNN-1D:
+  batch_size: 8
+  num_epochs: 100
+  learningRate: 0.0001
+  optimizer: Adam
+
+DI-CNN+:
+  batch_size: 30
+  num_epochs: 100
+  learningRate: 0.0001
+  optimizer: AdamW
+
+# ViT:
+#   batch_size: 30
+#   num_epochs: 100
+#   learningRate: 0.0001
+#   optimizer: AdamW
+
+IT-KAN:
+  alpha: 1.0
+  beta: 1.0
+  sigma: 1.0
+  k: 16
+  batch_size: 8
+  num_epochs: 100
+  learningRate: 0.0001
+  optimizer: Adam
+
+
+
+
+

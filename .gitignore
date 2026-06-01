@@ -1,0 +1,7 @@
+__pycache__
+data/processed
+results/
+
+# Momentarily
+requirements_env.txt
+requirements.txt
