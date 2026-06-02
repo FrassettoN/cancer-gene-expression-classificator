@@ -26,23 +26,23 @@ if __name__ == "__main__":
     folder = os.path.join("data", "processed")
 
     file_paths = {
-        r"GSE13507_trasp_mod.csv": "Bladder Urothelial Carcinoma",
-        r"GSE39004_trasp_mod.csv": "Breast invasive carcinoma cancer",
-        r"TCGA-BRCA_trasp_mod.csv": "Breast cancer",
-        r"GSE41657_trasp_mod.csv": "Colon adenocarcinoma",
-        r"GSE20347_trasp_mod.csv": "Esophageal carcinoma",
-        r"GSE6631_trasp_mod.csv": "Head and Neck squamous cell carcinoma",
+        # r"GSE13507_trasp_mod.csv": "Bladder Urothelial Carcinoma",
+        # r"GSE39004_trasp_mod.csv": "Breast invasive carcinoma cancer",
+        # r"TCGA-BRCA_trasp_mod.csv": "Breast cancer",
+        # r"GSE41657_trasp_mod.csv": "Colon adenocarcinoma",
+        # r"GSE20347_trasp_mod.csv": "Esophageal carcinoma",
+        # r"GSE6631_trasp_mod.csv": "Head and Neck squamous cell carcinoma",
         r"GSE15641_1_trasp_mod.csv": "Kidney Chromophobe",
-        r"GSE15641_2_trasp_mod.csv": "Kidney renal clear cell carcinoma",
-        r"GSE15641_3_trasp_mod.csv": "Kidney renal papillary cell carcinoma",
-        r"GSE45267_trasp_mod.csv": "Liver hepatocellular carcinoma",
-        r"GSE33479_trasp_mod.csv": "Lung squamous cell carcinoma",
-        r"GSE10072_trasp_mod.csv": "Lung adenocarcinoma",
-        r"GSE6919_trasp_mod.csv": "Prostate adenocarcinoma",
-        r"GSE20842_trasp_mod.csv": "Rectum adenocarcinoma",
-        r"GSE2685_trasp_mod.csv": "Stomach adenocarcinoma",
-        r"GSE33630_trasp_mod.csv": "Thyroid carcinoma",
-        r"GSE17025_trasp_mod.csv": "Uterine Corpus Endometrial Carcinoma",
+        # r"GSE15641_2_trasp_mod.csv": "Kidney renal clear cell carcinoma",
+        # r"GSE15641_3_trasp_mod.csv": "Kidney renal papillary cell carcinoma",
+        # r"GSE45267_trasp_mod.csv": "Liver hepatocellular carcinoma",
+        # r"GSE33479_trasp_mod.csv": "Lung squamous cell carcinoma",
+        # r"GSE10072_trasp_mod.csv": "Lung adenocarcinoma",
+        # r"GSE6919_trasp_mod.csv": "Prostate adenocarcinoma",
+        # r"GSE20842_trasp_mod.csv": "Rectum adenocarcinoma",
+        # r"GSE2685_trasp_mod.csv": "Stomach adenocarcinoma",
+        # r"GSE33630_trasp_mod.csv": "Thyroid carcinoma",
+        # r"GSE17025_trasp_mod.csv": "Uterine Corpus Endometrial Carcinoma",
     }
 
     # List to store the accuracy values for different datasets
@@ -262,5 +262,5 @@ if __name__ == "__main__":
     # ---- Chart part ----
 
     if chart:
-        accuracy_bar_chart(file_paths, accuracies, std_errors, charts_dir)
+        accuracy_bar_chart(file_paths, models, accuracies, std_errors, charts_dir)
         print(f"The chart has been saved as 'bar_chart.png' in: {charts_dir}")

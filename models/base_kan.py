@@ -3,6 +3,10 @@ from typing import List, Sequence
 import torch
 import torch.nn as nn
 
+from .efficient_kan import _EfficientKAN
+
+from typing import List, Sequence
+
 
 def _assert_layers(layers: Sequence[int]) -> List[int]:
     layers_list = list(layers)
@@ -21,16 +25,14 @@ class BaseKAN(nn.Module):
     def __init__(self, layers: Sequence[int], **kwargs):
         super().__init__()
         layers_list = _assert_layers(layers)
-        try:
-            _EfficientKAN = _load_local_efficient_kan_class()
-        except Exception as e:  # pragma: no cover
-            raise RuntimeError(
-                "Cannot build BaseKAN because local EfficientKAN implementation is unavailable.\n"
-                "Expected to find `fc_kan_repo/models/efficient_kan.py`."
-            ) from e
 
         # Use the same constructor surface as EfficientKAN (layers_hidden + params).
+        kwargs = dict(kwargs)
+        kwargs.pop("enable_standalone_scale_spline", None)
         self._model = _EfficientKAN(layers_hidden=layers_list, **kwargs)
+        for layer in getattr(self._model, "layers", []):
+            if hasattr(layer, "enable_standalone_scale_spline"):
+                layer.enable_standalone_scale_spline = False
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         try:

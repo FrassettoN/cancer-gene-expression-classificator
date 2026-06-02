@@ -19,13 +19,12 @@ def roc_plot(y_true, y_score, auc_value, model_name, cancer_type, charts_dir):
     plt.close()
 
 
-def accuracy_bar_chart(file_paths, accuracies, std_errors, charts_dir):
+def accuracy_bar_chart(file_paths, models, accuracies, std_errors, charts_dir):
     labels = list(file_paths.values())
     x = np.arange(len(labels))
     width = 0.15
 
-    models = ["IT-KAN", "DI-CNN+", "KAN", "MLP", "SVM", "CNN-1D"]
-    colors = ["#36BFC0", "#40E0D0", "#00BFFF", "#0077FF", "#0047AB", "#003366"]
+    colors = plt.cm.viridis(np.linspace(0.15, 0.85, len(models)))
 
     fig, ax = plt.subplots(figsize=(12, 8))
 

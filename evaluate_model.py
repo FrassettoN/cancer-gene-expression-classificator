@@ -11,7 +11,15 @@ from joblib import Parallel, delayed
 from libsvm.svmutil import svm_problem, svm_parameter, svm_train, svm_predict
 from torch.utils.data import DataLoader, TensorDataset
 
-from models import KAN, FourierKAN, MLP, CNN_1D, CNN, VisionTransformer
+from models import (
+    BaseKAN,
+    EfficientKAN,
+    FourierKAN,
+    MLP,
+    CNN_1D,
+    CNN,
+    VisionTransformer,
+)
 from utils import (
     channel_expansion,
     neighbor_informed_gene_expression,
@@ -38,6 +46,8 @@ def training_loop(n_epochs, optimizer, model, criterion, train_loader, device):
             # Forward pass
             outputs = model(features)
             loss = criterion(outputs, labels)
+            if model == "EfficientKAN":
+                loss = loss + 1e-4 * model.regularization_loss()
 
             # Backward and optimize
             optimizer.zero_grad()
@@ -93,7 +103,11 @@ def load_model(
     input_dim,
     num_classes,
 ):
-    if model_name == "KAN":
+    if model_name == "BaseKAN":
+        model = BaseKAN(layers=[input_dim, 32, 2])
+    elif model_name == "EfficientKAN":
+        model = EfficientKAN(layers=[input_dim, 32, 2])
+    elif model_name == "KAN":
         model = KAN(
             layers_hidden=[input_dim, 100, num_classes],
             grid_size=9,
