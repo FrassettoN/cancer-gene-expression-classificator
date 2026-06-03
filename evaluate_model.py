@@ -98,58 +98,55 @@ def testing_loop(model, criterion, test_loader, device):
     return test_loss, accuracy, np.vstack(logits_list)
 
 
-def load_model(
-    model_name,
-    input_dim,
-    num_classes,
-):
-    if model_name == "BaseKAN":
-        model = BaseKAN(layers=[input_dim, 32, 2])
+def load_model(model_name, input_dim, num_classes, config):
+    if model_name == "MLP":
+        hidden_dim = getattr(config, "hidden_dim", 100)
+        model = MLP(input_dim=input_dim, hidden_dim=hidden_dim, output_dim=num_classes)
+    elif model_name == "BaseKAN":
+        hidden_dim = getattr(config, "hidden_dim", 32)
+        model = BaseKAN(layers=[input_dim, hidden_dim, num_classes])
     elif model_name == "EfficientKAN":
-        model = EfficientKAN(layers=[input_dim, 32, 2])
-    elif model_name == "KAN":
-        model = KAN(
-            layers_hidden=[input_dim, 100, num_classes],
-            grid_size=9,
-            spline_order=3,
-        )
+        hidden_dim = getattr(config, "hidden_dim", 32)
+        model = EfficientKAN(layers=[input_dim, hidden_dim, num_classes])
     elif model_name == "FourierKAN":
-        model = FourierKAN(
-            layers=[input_dim, 100, num_classes],
-            grid_size=9,
-            spline_order=3,
-        )
-    elif model_name == "MLP":
-        model = MLP(input_dim=input_dim, hidden_dim=100, output_dim=num_classes)
-
+        hidden_dim = getattr(config, "hidden_dim", 32)
+        model = FourierKAN(layers=[input_dim, hidden_dim, num_classes])
     elif model_name == "CNN-1D":
         model = CNN_1D(input_dim=input_dim, num_classes=num_classes)
-
     elif model_name == "DI-CNN+":
         model = CNN(
             in_channels=input_dim, num_classes=num_classes
         )  # DeepInsight-CNN (multi-channel) [DI-CNN+]
-
-    elif model_name == "ViT":
-        model = VisionTransformer(
-            patch_size=8,  # Size of each patch (patch_size x patch_size) that the image is split into
-            image_size=64,  # Size of the input images (image_size x image_size pixels)
-            C=input_dim,  # Number of input channels
-            num_layers=4,  # Number of transformer layers in the model
-            embedding_dim=2096,  # Dimensionality of the embedding space for each patch
-            num_heads=8,  # Number of attention heads in the multi-head attention mechanism
-            hidden_dim=2096,  # Dimension of the hidden layer
-            dropout_prob=0.1,  # Probability of dropout to prevent overfitting
-            num_classes=num_classes,
-        )  # Number of classes
-
     elif model_name == "IT-KAN":
-        model = KAN(
-            layers_hidden=[input_dim, 100, num_classes],
-            grid_size=9,
-            spline_order=3,
+        hidden_dim = getattr(config, "hidden_dim", 100)
+        grid_size = getattr(config, "grid_size", 9)
+        spline_order = getattr(config, "spline_order", 3)
+        model = BaseKAN(
+            layers=[input_dim, hidden_dim, num_classes],
+            grid_size=grid_size,
+            spline_order=spline_order,
         )
 
+    elif model_name == "ViT":
+        patch_size = getattr(config, "patch_size", 8)
+        image_size = getattr(config, "image_size", 64)
+        num_layers = getattr(config, "num_layers", 4)
+        embedding_dim = getattr(config, "embedding_dim", 2096)
+        num_heads = getattr(config, "num_heads", 8)
+        hidden_dim = getattr(config, "hidden_dim", 2096)
+        dropout_prob = getattr(config, "dropout_prob", 0.1)
+
+        model = VisionTransformer(
+            patch_size=patch_size,
+            image_size=64,
+            C=input_dim,
+            num_layers=4,
+            embedding_dim=2096,
+            num_heads=8,
+            hidden_dim=2096,
+            dropout_prob=0.1,
+            num_classes=num_classes,
+        )
     else:
         raise ValueError(f"Model '{model_name}' is not supported")
 
@@ -454,11 +451,7 @@ def evaluate_models_cv(
                 elif model_name == "DI-CNN+":
                     input_dim = X_train_scaled.shape[1]
 
-                model = load_model(
-                    model_name,
-                    input_dim,
-                    num_classes,
-                )
+                model = load_model(model_name, input_dim, num_classes, config)
                 # Move the model to the GPU if available
                 model.to(device)
 
@@ -466,7 +459,7 @@ def evaluate_models_cv(
                 criterion = nn.CrossEntropyLoss()
 
                 optimizer_type = getattr(config, "optimizer", None)
-                weight_decay = getattr(config, "weight_decay", 0.01)
+                weight_decay = getattr(config, "weight_decay", 0)
                 if optimizer_type == "Adam":
                     optimizer = torch.optim.Adam(
                         model.parameters(), lr=learningRate, weight_decay=weight_decay

@@ -20,62 +20,84 @@ datasets:
   GSE17025_trasp_mod.csv: "Uterine Corpus Endometrial Carcinoma"
 
 models:
-  # SVM:
-  #   batch_size: 8
-  #   num_epochs: 100
-  #   learningRate: 0.0001
+  SVM:
+    batch_size: 8
+    num_epochs: 100
+    learningRate: 0.0001
+
+  MLP:
+    hidden_dim: 100
+    batch_size: 8
+    num_epochs: 100
+    learningRate: 0.0001
+    optimizer: Adam
   
+  CNN-1D:
+    batch_size: 8
+    num_epochs: 100
+    learningRate: 0.0001
+    optimizer: Adam
+
   BaseKAN:
+    hidden_dim: 32
     batch_size: 32
     num_epochs: 50
     learningRate: 0.001
     optimizer: Adam
 
-  # EfficientKAN:
-  #   batch_size: 32
-  #   num_epochs: 50
-  #   learningRate: 0.001
-  #   optimizer: Adam
+  EfficientKAN:
+    hidden_dim: 32
+    batch_size: 32
+    num_epochs: 50
+    learningRate: 0.001
+    optimizer: Adam
 
-  # FourierKAN:
-  #   batch_size: 8
-  #   num_epochs: 100
-  #   learningRate: 0.0001
-  #   optimizer: Adam
+  FourierKAN:
+    hidden_dim: 32
+    batch_size: 32
+    num_epochs: 50
+    learningRate: 0.001
+    optimizer: Adam
 
-  # MLP:
-  #   batch_size: 8
-  #   num_epochs: 100
-  #   learningRate: 0.0001
-  #   optimizer: Adam
+  IT-KAN:
+    hidden_dim: 100
+    grid_size: 9
+    spline_order: 3 
+    alpha: 1.0
+    beta: 1.0
+    sigma: 1.0
+    k: 16
+    batch_size: 8
+    num_epochs: 100
+    learningRate: 0.0001
+    optimizer: Adam
+    weight_decay: 0.01
 
-  # CNN-1D:
-  #   batch_size: 8
-  #   num_epochs: 100
-  #   learningRate: 0.0001
-  #   optimizer: Adam
+  DI-CNN+:
+    batch_size: 30
+    num_epochs: 100
+    learningRate: 0.0001
+    optimizer: AdamW
 
-  # DI-CNN+:
-  #   batch_size: 30
-  #   num_epochs: 100
-  #   learningRate: 0.0001
-  #   optimizer: AdamW
-
-  # ViT:
-  #   batch_size: 30
-  #   num_epochs: 100
-  #   learningRate: 0.0001
-  #   optimizer: AdamW
-
-  # IT-KAN:
-  #   alpha: 1.0
-  #   beta: 1.0
-  #   sigma: 1.0
-  #   k: 16
-  #   batch_size: 8
-  #   num_epochs: 100
-  #   learningRate: 0.0001
-  #   optimizer: Adam
+  ViT:
+      # Size of each patch (patch_size x patch_size) that the image is split into
+      patch_size: 8
+      # Size of the input images (image_size x image_size pixels)
+      image_size: 64
+      # Number of transformer layers in the model
+      num_layers: 4
+      # Dimensionality of the embedding space for each patch
+      embedding_dim: 2096
+      # Number of attention heads in the multi-head attention mechanism
+      num_heads: 8
+      # Dimension of the hidden layer
+      hidden_dim: 2096
+      # Probability of dropout to prevent overfitting
+      dropout_prob: 0.1
+      batch_size: 30
+      num_epochs: 100
+      learningRate: 0.0001
+      optimizer: AdamW
 
 
 

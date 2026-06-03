@@ -30,7 +30,6 @@ def main():
     with open(configs_path) as f:
         configs = yaml.safe_load(f)
 
-    print(configs)
     n_features = configs["n_features"]
     file_paths = configs["datasets"]
     model_configs = configs["models"]
