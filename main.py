@@ -10,6 +10,7 @@ import torch
 import torch.nn as nn
 from sklearn.metrics import roc_auc_score
 
+from cli import cli
 from utils.logger import log_to_file
 from plots import roc_plot, accuracy_bar_chart
 from evaluate_model import evaluate_models_cv
@@ -21,29 +22,18 @@ def softmax(logits):
     return e_x / np.sum(e_x, axis=1, keepdims=True)
 
 
-if __name__ == "__main__":
+def main():
+    configs_path = cli()
 
     folder = os.path.join("data", "processed")
 
-    file_paths = {
-        # r"GSE13507_trasp_mod.csv": "Bladder Urothelial Carcinoma",
-        # r"GSE39004_trasp_mod.csv": "Breast invasive carcinoma cancer",
-        # r"TCGA-BRCA_trasp_mod.csv": "Breast cancer",
-        # r"GSE41657_trasp_mod.csv": "Colon adenocarcinoma",
-        # r"GSE20347_trasp_mod.csv": "Esophageal carcinoma",
-        # r"GSE6631_trasp_mod.csv": "Head and Neck squamous cell carcinoma",
-        r"GSE15641_1_trasp_mod.csv": "Kidney Chromophobe",
-        # r"GSE15641_2_trasp_mod.csv": "Kidney renal clear cell carcinoma",
-        # r"GSE15641_3_trasp_mod.csv": "Kidney renal papillary cell carcinoma",
-        # r"GSE45267_trasp_mod.csv": "Liver hepatocellular carcinoma",
-        # r"GSE33479_trasp_mod.csv": "Lung squamous cell carcinoma",
-        # r"GSE10072_trasp_mod.csv": "Lung adenocarcinoma",
-        # r"GSE6919_trasp_mod.csv": "Prostate adenocarcinoma",
-        # r"GSE20842_trasp_mod.csv": "Rectum adenocarcinoma",
-        # r"GSE2685_trasp_mod.csv": "Stomach adenocarcinoma",
-        # r"GSE33630_trasp_mod.csv": "Thyroid carcinoma",
-        # r"GSE17025_trasp_mod.csv": "Uterine Corpus Endometrial Carcinoma",
-    }
+    with open(configs_path) as f:
+        configs = yaml.safe_load(f)
+
+    print(configs)
+    n_features = configs["n_features"]
+    file_paths = configs["datasets"]
+    model_configs = configs["models"]
 
     # List to store the accuracy values for different datasets
     accuracies = {}
@@ -53,12 +43,6 @@ if __name__ == "__main__":
 
     # Setup for k-fold, models, and output options
     evaluation_type = "kfold"
-
-    with open("models.yaml") as stream:
-        try:
-            model_configs = yaml.safe_load(stream)
-        except yaml.YAMLError as exc:
-            print(exc)
 
     models = list(model_configs.keys())
     logits_active = True
@@ -70,7 +54,7 @@ if __name__ == "__main__":
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
     # Base directory for all results
-    results_dir = os.path.join("results", f"results_{timestamp}")
+    results_dir = os.path.join("results", f"results_{n_features}_{timestamp}")
     os.makedirs(results_dir, exist_ok=True)
     abs_path = os.path.abspath(results_dir)
 
@@ -87,7 +71,7 @@ if __name__ == "__main__":
     os.makedirs(charts_dir, exist_ok=True)
 
     # Define the path for saving logits outputs (model predictions before softmax)
-    logits_dir = os.path.join("results", f"results_{timestamp}", "logits")
+    logits_dir = os.path.join(results_dir, "logits")
 
     # If the processed data folder doesn't exist, run the preprocessing script
     processed_folder = os.path.join("data", "processed")
@@ -144,6 +128,7 @@ if __name__ == "__main__":
 
         # Evaluate Models with Leave-One-Out Cross-Validation
         avg_loss, avg_accuracy, sem = evaluate_models_cv(
+            n_features,
             models,
             model_configs,
             features,
@@ -191,10 +176,11 @@ if __name__ == "__main__":
         for file_path, cancer_type in file_paths.items():
 
             log_to_file(f"\n--- Results for: {cancer_type} ---", metrics_path)
+            y_test_dir = os.path.join(logits_dir, cancer_type, "ytest")
 
             fold_files = [
                 f
-                for f in os.listdir(logits_dir)
+                for f in os.listdir(y_test_dir)
                 if f.startswith(f"ytest_{cancer_type}") and f.endswith(".txt")
             ]
             num_folds = len(fold_files)
@@ -208,13 +194,17 @@ if __name__ == "__main__":
 
                     # Load real labels
                     y_test_path = os.path.join(
-                        logits_dir, f"ytest_{cancer_type}_{fold + 1}.txt"
+                        y_test_dir, f"ytest_{cancer_type}_{fold + 1}.txt"
                     )
                     y_test = np.loadtxt(y_test_path, dtype=int)
 
                     # Load logits
+                    logits_dataset_model_dir = os.path.join(
+                        logits_dir, cancer_type, model_name
+                    )
                     logits_path = os.path.join(
-                        logits_dir, f"logits_{cancer_type}_{fold + 1}_{model_name}.txt"
+                        logits_dataset_model_dir,
+                        f"logits_{cancer_type}_{fold + 1}_{model_name}.txt",
                     )
                     if os.path.exists(logits_path):
                         logits = np.loadtxt(logits_path)
@@ -264,3 +254,7 @@ if __name__ == "__main__":
     if chart:
         accuracy_bar_chart(file_paths, models, accuracies, std_errors, charts_dir)
         print(f"The chart has been saved as 'bar_chart.png' in: {charts_dir}")
+
+
+if __name__ == "__main__":
+    main()

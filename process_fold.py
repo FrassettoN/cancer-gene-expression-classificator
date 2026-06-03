@@ -7,7 +7,7 @@ from utils import (
 )
 
 
-def process_fold(train_index, test_index, features, labels, device):
+def process_fold(n_features, train_index, test_index, features, labels, device):
 
     # Split the data into training and test sets
     X_train = features[train_index, :]  # Training features
@@ -35,19 +35,24 @@ def process_fold(train_index, test_index, features, labels, device):
             max_features=10000,
         )
     )
-    X_train_scaled, X_test_scaled, selected_feature_indices_rff = feature_selection(
-        X_train_scaled_chi2,
-        X_test_scaled_chi2,
-        y_train,
-        device,
-        method="RfF",
-        max_features=30,
-    )
-
-    # Combine selected feature indices from both methods
-    selected_feature_indices = selected_feature_indices_chi2[
-        selected_feature_indices_rff
-    ]
+    if n_features == 30:
+        X_train_scaled, X_test_scaled, selected_feature_indices_rff = feature_selection(
+            X_train_scaled_chi2,
+            X_test_scaled_chi2,
+            y_train,
+            device,
+            method="RfF",
+            max_features=30,
+        )
+        # Combine selected feature indices from both methods
+        selected_feature_indices = selected_feature_indices_chi2[
+            selected_feature_indices_rff
+        ]
+    elif n_features == 10000:
+        X_train_scaled, X_test_scaled = X_train_scaled_chi2, X_test_scaled_chi2
+        selected_feature_indices = selected_feature_indices_chi2
+    else:
+        raise ValueError("Number of features not supported")
 
     # Original DeepInsight
     tsne = TSNE(

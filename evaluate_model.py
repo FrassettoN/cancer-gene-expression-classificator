@@ -164,6 +164,7 @@ def init_dicts(models, dicts):
 
 
 def evaluate_models_cv(
+    n_features,
     models,
     model_configs,
     features,
@@ -253,7 +254,7 @@ def evaluate_models_cv(
 
     # Process each fold in parallel using joblib
     results = Parallel(n_jobs=-1)(
-        delayed(process_fold)(train_idx, test_idx, features, labels, device)
+        delayed(process_fold)(n_features, train_idx, test_idx, features, labels, device)
         for train_idx, test_idx in splits_array
     )
 
@@ -277,14 +278,21 @@ def evaluate_models_cv(
         sigma = getattr(config, "sigma", None)
         k = getattr(config, "k", None)
 
+        logits_dataset_dir = os.path.join(logits_dir, dataset_name)
+        ytest_dataset_dir = os.path.join(logits_dataset_dir, "ytest")
+        os.makedirs(ytest_dataset_dir, exist_ok=True)
+        logits_dataset_model_dir = os.path.join(logits_dataset_dir, model_name)
+        os.makedirs(logits_dataset_model_dir, exist_ok=True)
+
         for fold in range(len(splits_array)):
 
             # Define save paths for logits and test labels
-            logits_save_path = os.path.join(
-                logits_dir, f"logits_{dataset_name}_{fold + 1}_{model_name}.txt"
-            )
             ytest_save_path = os.path.join(
-                logits_dir, f"ytest_{dataset_name}_{fold + 1}.txt"
+                ytest_dataset_dir, f"ytest_{dataset_name}_{fold + 1}.txt"
+            )
+            logits_save_path = os.path.join(
+                logits_dataset_model_dir,
+                f"logits_{dataset_name}_{fold + 1}_{model_name}.txt",
             )
             features_save_path = os.path.join(
                 features_dir, f"selected_features_{dataset_name}_{fold + 1}.txt"
