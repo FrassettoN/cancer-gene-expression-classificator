@@ -3,8 +3,8 @@ import os
 import numpy as np
 import pandas as pd
 import torch
-import shap
 
+# import shap
 # import pymrmr
 
 from skrebate import ReliefF
@@ -264,22 +264,22 @@ def feature_selection(
             X_train_scaled, X_test_scaled, device, 30, 10, bottleneck=True
         )
 
-    elif method == "SHAP":
-        model = GradientBoostingClassifier(n_estimators=100, random_state=42)
-        model.fit(X_train_scaled, y_train)
+    # elif method == "SHAP":
+    #     model = GradientBoostingClassifier(n_estimators=100, random_state=42)
+    #     model.fit(X_train_scaled, y_train)
 
-        explainer = shap.TreeExplainer(model)
-        shap_values_train = explainer.shap_values(X_train_scaled)
+    #     explainer = shap.TreeExplainer(model)
+    #     shap_values_train = explainer.shap_values(X_train_scaled)
 
-        feature_importance = (
-            np.abs(shap_values_train).mean(axis=0)
-            if len(shap_values_train.shape) > 2
-            else np.abs(shap_values_train).mean(axis=0)
-        )
-        top_k_indices = np.argsort(feature_importance)[::-1][:top_indices]
+    #     feature_importance = (
+    #         np.abs(shap_values_train).mean(axis=0)
+    #         if len(shap_values_train.shape) > 2
+    #         else np.abs(shap_values_train).mean(axis=0)
+    #     )
+    #     top_k_indices = np.argsort(feature_importance)[::-1][:top_indices]
 
-        X_train_selected = X_train_scaled[:, top_k_indices]
-        X_test_selected = X_test_scaled[:, top_k_indices]
+    #     X_train_selected = X_train_scaled[:, top_k_indices]
+    #     X_test_selected = X_test_scaled[:, top_k_indices]
 
     elif method == "RFE":
         estimator = RandomForestClassifier(n_estimators=100, random_state=42)
