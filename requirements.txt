@@ -41,7 +41,6 @@ packaging==26.2
 pandas==3.0.3
 pillow==12.2.0
 pyDeepInsight==0.2.3
-pymrmr==0.1.11
 pyparsing==3.3.2
 python-dateutil==2.9.0.post0
 pytorch-gradcam==0.2.1
@@ -49,7 +48,6 @@ PyYAML==6.0.3
 scikit-learn==1.8.0
 scipy==1.17.1
 setuptools==81.0.0
-shap==0.51.0
 six==1.17.0
 skrebate==0.62
 slicer==0.0.8
