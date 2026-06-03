@@ -3,5 +3,4 @@ data/processed/*
 results/
 
 # Momentarily
-requirements_env.txt
 requirements.txt
