@@ -28,6 +28,61 @@ from utils.logger import log_to_file, suppress_output, restore_output
 from process_fold import process_fold
 
 
+def load_model(model_name, input_dim, num_classes, config):
+    if model_name == "MLP":
+        hidden_dim = getattr(config, "hidden_dim", 100)
+        model = MLP(input_dim=input_dim, hidden_dim=hidden_dim, output_dim=num_classes)
+    elif model_name == "BaseKAN":
+        hidden_dim = getattr(config, "hidden_dim", 32)
+        model = BaseKAN(layers=[input_dim, hidden_dim, num_classes])
+    elif model_name == "EfficientKAN":
+        hidden_dim = getattr(config, "hidden_dim", 32)
+        model = EfficientKAN(layers=[input_dim, hidden_dim, num_classes])
+    elif model_name == "FourierKAN":
+        hidden_dim = getattr(config, "hidden_dim", 32)
+        model = FourierKAN(layers=[input_dim, hidden_dim, num_classes])
+    elif model_name == "CNN-1D":
+        model = CNN_1D(input_dim=input_dim, num_classes=num_classes)
+    elif model_name == "DI-CNN+":
+        model = CNN(
+            in_channels=input_dim, num_classes=num_classes
+        )  # DeepInsight-CNN (multi-channel) [DI-CNN+]
+    elif model_name == "IT-KAN":
+        hidden_dim = getattr(config, "hidden_dim", 100)
+        grid_size = getattr(config, "grid_size", 9)
+        spline_order = getattr(config, "spline_order", 3)
+        model = BaseKAN(
+            layers=[input_dim, hidden_dim, num_classes],
+            grid_size=grid_size,
+            spline_order=spline_order,
+        )
+
+    elif model_name == "ViT":
+        patch_size = getattr(config, "patch_size", 8)
+        image_size = getattr(config, "image_size", 64)
+        num_layers = getattr(config, "num_layers", 4)
+        embedding_dim = getattr(config, "embedding_dim", 2096)
+        num_heads = getattr(config, "num_heads", 8)
+        hidden_dim = getattr(config, "hidden_dim", 2096)
+        dropout_prob = getattr(config, "dropout_prob", 0.1)
+
+        model = VisionTransformer(
+            patch_size=patch_size,
+            image_size=64,
+            C=input_dim,
+            num_layers=4,
+            embedding_dim=2096,
+            num_heads=8,
+            hidden_dim=2096,
+            dropout_prob=0.1,
+            num_classes=num_classes,
+        )
+    else:
+        raise ValueError(f"Model '{model_name}' is not supported")
+
+    return model
+
+
 def training_loop(n_epochs, optimizer, model, criterion, train_loader, device):
 
     losses = []  # List of loss values
@@ -96,61 +151,6 @@ def testing_loop(model, criterion, test_loader, device):
         accuracy = 100.0 * correct / total
 
     return test_loss, accuracy, np.vstack(logits_list)
-
-
-def load_model(model_name, input_dim, num_classes, config):
-    if model_name == "MLP":
-        hidden_dim = getattr(config, "hidden_dim", 100)
-        model = MLP(input_dim=input_dim, hidden_dim=hidden_dim, output_dim=num_classes)
-    elif model_name == "BaseKAN":
-        hidden_dim = getattr(config, "hidden_dim", 32)
-        model = BaseKAN(layers=[input_dim, hidden_dim, num_classes])
-    elif model_name == "EfficientKAN":
-        hidden_dim = getattr(config, "hidden_dim", 32)
-        model = EfficientKAN(layers=[input_dim, hidden_dim, num_classes])
-    elif model_name == "FourierKAN":
-        hidden_dim = getattr(config, "hidden_dim", 32)
-        model = FourierKAN(layers=[input_dim, hidden_dim, num_classes])
-    elif model_name == "CNN-1D":
-        model = CNN_1D(input_dim=input_dim, num_classes=num_classes)
-    elif model_name == "DI-CNN+":
-        model = CNN(
-            in_channels=input_dim, num_classes=num_classes
-        )  # DeepInsight-CNN (multi-channel) [DI-CNN+]
-    elif model_name == "IT-KAN":
-        hidden_dim = getattr(config, "hidden_dim", 100)
-        grid_size = getattr(config, "grid_size", 9)
-        spline_order = getattr(config, "spline_order", 3)
-        model = BaseKAN(
-            layers=[input_dim, hidden_dim, num_classes],
-            grid_size=grid_size,
-            spline_order=spline_order,
-        )
-
-    elif model_name == "ViT":
-        patch_size = getattr(config, "patch_size", 8)
-        image_size = getattr(config, "image_size", 64)
-        num_layers = getattr(config, "num_layers", 4)
-        embedding_dim = getattr(config, "embedding_dim", 2096)
-        num_heads = getattr(config, "num_heads", 8)
-        hidden_dim = getattr(config, "hidden_dim", 2096)
-        dropout_prob = getattr(config, "dropout_prob", 0.1)
-
-        model = VisionTransformer(
-            patch_size=patch_size,
-            image_size=64,
-            C=input_dim,
-            num_layers=4,
-            embedding_dim=2096,
-            num_heads=8,
-            hidden_dim=2096,
-            dropout_prob=0.1,
-            num_classes=num_classes,
-        )
-    else:
-        raise ValueError(f"Model '{model_name}' is not supported")
-
-    return model
 
 
 def init_dicts(models, dicts):
