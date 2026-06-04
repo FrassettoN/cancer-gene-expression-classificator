@@ -1,23 +1,23 @@
 n_features: 30
 
 datasets:
-  GSE13507_trasp_mod.csv: "Bladder Urothelial Carcinoma"
-  GSE39004_trasp_mod.csv: "Breast invasive carcinoma cancer"
-  TCGA-BRCA_trasp_mod.csv: "Breast cancer"
-  GSE41657_trasp_mod.csv: "Colon adenocarcinoma"
-  GSE20347_trasp_mod.csv: "Esophageal carcinoma"
-  GSE6631_trasp_mod.csv: "Head and Neck squamous cell carcinoma"
+  # GSE13507_trasp_mod.csv: "Bladder Urothelial Carcinoma"
+  # GSE39004_trasp_mod.csv: "Breast invasive carcinoma cancer"
+  # TCGA-BRCA_trasp_mod.csv: "Breast cancer"
+  # GSE41657_trasp_mod.csv: "Colon adenocarcinoma"
+  # GSE20347_trasp_mod.csv: "Esophageal carcinoma"
+  # GSE6631_trasp_mod.csv: "Head and Neck squamous cell carcinoma"
   GSE15641_1_trasp_mod.csv: "Kidney Chromophobe"
-  GSE15641_2_trasp_mod.csv: "Kidney renal clear cell carcinoma"
-  GSE15641_3_trasp_mod.csv: "Kidney renal papillary cell carcinoma"
-  GSE45267_trasp_mod.csv: "Liver hepatocellular carcinoma"
-  GSE33479_trasp_mod.csv: "Lung squamous cell carcinoma"
-  GSE10072_trasp_mod.csv: "Lung adenocarcinoma"
-  GSE6919_trasp_mod.csv: "Prostate adenocarcinoma"
-  GSE20842_trasp_mod.csv: "Rectum adenocarcinoma"
-  GSE2685_trasp_mod.csv: "Stomach adenocarcinoma"
-  GSE33630_trasp_mod.csv: "Thyroid carcinoma"
-  GSE17025_trasp_mod.csv: "Uterine Corpus Endometrial Carcinoma"
+  # GSE15641_2_trasp_mod.csv: "Kidney renal clear cell carcinoma"
+  # GSE15641_3_trasp_mod.csv: "Kidney renal papillary cell carcinoma"
+  # GSE45267_trasp_mod.csv: "Liver hepatocellular carcinoma"
+  # GSE33479_trasp_mod.csv: "Lung squamous cell carcinoma"
+  # GSE10072_trasp_mod.csv: "Lung adenocarcinoma"
+  # GSE6919_trasp_mod.csv: "Prostate adenocarcinoma"
+  # GSE20842_trasp_mod.csv: "Rectum adenocarcinoma"
+  # GSE2685_trasp_mod.csv: "Stomach adenocarcinoma"
+  # GSE33630_trasp_mod.csv: "Thyroid carcinoma"
+  # GSE17025_trasp_mod.csv: "Uterine Corpus Endometrial Carcinoma"
 
 models:
   SVM:
@@ -82,26 +82,26 @@ models:
     optimizer: AdamW
     weight_decay: 0.01
 
-  ViT:
-      # Size of each patch (patch_size x patch_size) that the image is split into
-      patch_size: 8
-      # Size of the input images (image_size x image_size pixels)
-      image_size: 64
-      # Number of transformer layers in the model
-      num_layers: 4
-      # Dimensionality of the embedding space for each patch
-      embedding_dim: 2096
-      # Number of attention heads in the multi-head attention mechanism
-      num_heads: 8
-      # Dimension of the hidden layer
-      hidden_dim: 2096
-      # Probability of dropout to prevent overfitting
-      dropout_prob: 0.1
-      batch_size: 30
-      num_epochs: 100
-      learningRate: 0.0001
-      optimizer: AdamW
-      weight_decay: 0.01
+  # ViT:
+  #     # Size of each patch (patch_size x patch_size) that the image is split into
+  #     patch_size: 8
+  #     # Size of the input images (image_size x image_size pixels)
+  #     image_size: 64
+  #     # Number of transformer layers in the model
+  #     num_layers: 4
+  #     # Dimensionality of the embedding space for each patch
+  #     embedding_dim: 2096
+  #     # Number of attention heads in the multi-head attention mechanism
+  #     num_heads: 8
+  #     # Dimension of the hidden layer
+  #     hidden_dim: 2096
+  #     # Probability of dropout to prevent overfitting
+  #     dropout_prob: 0.1
+  #     batch_size: 30
+  #     num_epochs: 100
+  #     learningRate: 0.0001
+  #     optimizer: AdamW
+  #     weight_decay: 0.01
 
 
 
