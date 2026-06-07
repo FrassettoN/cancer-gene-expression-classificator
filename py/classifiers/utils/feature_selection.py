@@ -149,6 +149,7 @@ def feature_selection(
     method="ensemble",
     max_features=10000,
     coords="None",
+    seed=None
 ):
 
     top_indices = min(
@@ -174,7 +175,7 @@ def feature_selection(
 
     elif method == "RfF":
         rf = RandomForestClassifier(
-            n_estimators=1000
+            n_estimators=1000, random_state=seed
         )  # Initialize the RandomForestClassifier
         rf.fit(
             X_train_scaled, y_train
@@ -244,7 +245,7 @@ def feature_selection(
 
     elif method == "IG":
         selector = SelectKBest(
-            score_func=mutual_info_classif, k=top_indices
+            score_func=mutual_info_classif, k=top_indices,
         )  # Information Gain
         X_train_selected = selector.fit_transform(X_train_scaled, y_train)
         X_test_selected = selector.transform(X_test_scaled)

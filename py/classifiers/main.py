@@ -12,6 +12,7 @@ from sklearn.metrics import roc_auc_score
 
 from cli import cli
 from utils.logger import log_to_file
+from utils.seed import set_seed
 from plots import roc_plot, accuracy_bar_chart
 from evaluate_model import evaluate_models_cv
 
@@ -89,7 +90,7 @@ def main():
     log_to_file(f"\nMODEL RESULTS", acc_path)
 
     for file_path, cancer_type in file_paths.items():
-
+        
         # Log dataset name and define dataset path
         log_to_file(f"\n--- Results for: {cancer_type} ---", acc_path)
         dataset_path = os.path.join(folder, file_path)
@@ -127,9 +128,8 @@ def main():
 
         # Evaluate Models with Leave-One-Out Cross-Validation
         avg_loss, avg_accuracy, sem = evaluate_models_cv(
-            n_features,
             models,
-            model_configs,
+            configs,
             features,
             labels,
             num_classes,

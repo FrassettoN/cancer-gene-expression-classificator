@@ -10,6 +10,7 @@ from sklearn.preprocessing import MinMaxScaler
 from joblib import Parallel, delayed
 from libsvm.svmutil import svm_problem, svm_parameter, svm_train, svm_predict
 from torch.utils.data import DataLoader, TensorDataset
+from utils.seed import set_seed
 
 from models import (
     BaseKAN,
@@ -161,9 +162,8 @@ def init_dicts(models, dicts):
 
 
 def evaluate_models_cv(
-    n_features,
     models,
-    model_configs,
+    configs,
     features,
     labels,
     num_classes,
@@ -174,6 +174,10 @@ def evaluate_models_cv(
     save_selected_features,
     paths,
 ):
+    n_features = configs["n_features"]
+    model_configs = configs["models"]
+    fs_seed = configs["fs_seed"]
+    classificator_seed = configs["classificator_seed"]
 
     # Extract paths
     abs_path = paths["abs_path"]
@@ -249,14 +253,16 @@ def evaluate_models_cv(
         features_dir = os.path.join(abs_path, "selected_features")
         os.makedirs(features_dir, exist_ok=True)
 
+    log_to_file(f"FS_seed: {fs_seed}", acc_path)
     # Process each fold in parallel using joblib
     results = Parallel(n_jobs=-1)(
-        delayed(process_fold)(n_features, train_idx, test_idx, features, labels, device)
+        delayed(process_fold)(n_features, train_idx, test_idx, features, labels, device, fs_seed)
         for train_idx, test_idx in splits_array
     )
 
     for model_name in models:
-
+        set_seed(classificator_seed)
+        log_to_file(f"Classificator_seed: {classificator_seed}", acc_path)
         log_to_file(f"\nModel: {model_name}", acc_path)
 
         # Parameters

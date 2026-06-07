@@ -7,7 +7,7 @@ from utils import (
 )
 
 
-def process_fold(n_features, train_index, test_index, features, labels, device):
+def process_fold(n_features, train_index, test_index, features, labels, device, seed):
 
     # Split the data into training and test sets
     X_train = features[train_index, :]  # Training features
@@ -33,6 +33,7 @@ def process_fold(n_features, train_index, test_index, features, labels, device):
             device,
             method="chi2",
             max_features=10000,
+            seed=seed
         )
     )
     if n_features == 30:
@@ -43,6 +44,7 @@ def process_fold(n_features, train_index, test_index, features, labels, device):
             device,
             method="RfF",
             max_features=30,
+            seed=seed
         )
         # Combine selected feature indices from both methods
         selected_feature_indices = selected_feature_indices_chi2[

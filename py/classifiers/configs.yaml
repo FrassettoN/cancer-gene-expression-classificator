@@ -1,3 +1,5 @@
+fs_seed: 42
+classificator_seed: 42
 n_features: 30
 
 datasets:
@@ -6,7 +8,7 @@ datasets:
   # TCGA-BRCA_trasp_mod.csv: "Breast cancer"
   # GSE41657_trasp_mod.csv: "Colon adenocarcinoma"
   # GSE20347_trasp_mod.csv: "Esophageal carcinoma"
-  # GSE6631_trasp_mod.csv: "Head and Neck squamous cell carcinoma"
+  GSE6631_trasp_mod.csv: "Head and Neck squamous cell carcinoma"
   GSE15641_1_trasp_mod.csv: "Kidney Chromophobe"
   # GSE15641_2_trasp_mod.csv: "Kidney renal clear cell carcinoma"
   # GSE15641_3_trasp_mod.csv: "Kidney renal papillary cell carcinoma"
