@@ -5,6 +5,8 @@ fc_kan/FC-KAN_dog_bs_sum_results
 
 # Momentarily
 requirements_env.txt
+fusion_models.py 
+ReadMe.md
 
 # R
 renv/
