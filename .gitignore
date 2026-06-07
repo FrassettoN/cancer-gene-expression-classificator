@@ -4,3 +4,7 @@ results/
 
 # Momentarily
 requirements_env.txt
+
+# R
+renv/
+.Rprofile
