@@ -173,15 +173,17 @@ def evaluate_models_cv(
     logits_active,
     save_selected_features,
     paths,
+    seed,
 ):
     n_features = configs["n_features"]
     model_configs = configs["models"]
-    fs_seed = configs["fs_seed"]
-    classificator_seed = configs["classificator_seed"]
+    fs_seed = seed
+    classificator_seed = seed
 
     # Extract paths
     abs_path = paths["abs_path"]
     acc_path = paths["acc_path"]
+    data_path = paths["data_path"]
 
     # Initialize dictionaries to store per-model metrics
     loss_eval = {}
@@ -198,18 +200,17 @@ def evaluate_models_cv(
 
     # Generate data splits based on evaluation type
     if evaluation_type == "loo":
-
-        loo = LeaveOneOut()
-
-        splits_dir = os.path.join("data", "splits", "loo")
-
-        if not os.path.exists(splits_dir):
-            os.makedirs(splits_dir)
-
+        splits_dir = os.path.join(data_path, "splits", "loo")
         splits_filename = os.path.join(splits_dir, f"splits_loo_{dataset_name}.npy")
-
-        # Create and save splits if they do not exist
         if not os.path.exists(splits_filename):
+            print("Loo splits don't exist - Saving them")
+
+            loo = LeaveOneOut()
+
+            if not os.path.exists(splits_dir):
+                os.makedirs(splits_dir)
+
+            # Create and save splits if they do not exist
             for train_index, test_index in loo.split(features):
                 splits.append((train_index, test_index))
 
@@ -218,18 +219,18 @@ def evaluate_models_cv(
         splits_array = np.load(splits_filename, allow_pickle=True)
 
     elif evaluation_type == "kfold":
-
-        kfold = StratifiedKFold(n_splits=10, shuffle=True, random_state=42)
-
-        splits_dir = os.path.join("data", "splits", "kfold")
-
-        if not os.path.exists(splits_dir):
-            os.makedirs(splits_dir)
-
+        splits_dir = os.path.join(data_path, "splits", "kfold")
         splits_filename = os.path.join(splits_dir, f"splits_kfold_{dataset_name}.npy")
-
+        
         # Create and save splits if they do not exist
         if not os.path.exists(splits_filename):
+            print("Kfold splits don't exist - Saving them")
+
+            kfold = StratifiedKFold(n_splits=10, shuffle=True, random_state=42)
+
+            if not os.path.exists(splits_dir):
+                os.makedirs(splits_dir)
+
 
             for train_index, test_index in kfold.split(features, labels):
 

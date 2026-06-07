@@ -17,8 +17,16 @@ def cli():
         default="../../",
         help="Base project folder containing `data/processed`. `results/` will be created, if necessary, under this folder.",
     )
+    parser.add_argument(
+        "-s",
+        "--seed",
+        type=int,
+        default=42,
+        help="Run random seed",
+    )
     args = parser.parse_args()
     configs_path = args.configs
     input_output_folder = args.input_output_folder
+    seed = args.seed
 
-    return configs_path, input_output_folder
+    return configs_path, input_output_folder, seed

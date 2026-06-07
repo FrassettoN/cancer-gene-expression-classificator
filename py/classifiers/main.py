@@ -12,7 +12,6 @@ from sklearn.metrics import roc_auc_score
 
 from cli import cli
 from utils.logger import log_to_file
-from utils.seed import set_seed
 from plots import roc_plot, accuracy_bar_chart
 from evaluate_model import evaluate_models_cv
 
@@ -24,9 +23,10 @@ def softmax(logits):
 
 
 def main():
-    configs_path, input_output_folder = cli()
+    configs_path, input_output_folder, seed = cli()
 
-    folder = os.path.join(input_output_folder, "data", "processed")
+    data_path = os.path.join(input_output_folder, "data")
+    processed_path = os.path.join(data_path, "processed")
 
     with open(configs_path) as f:
         configs = yaml.safe_load(f)
@@ -54,7 +54,7 @@ def main():
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
     # Base directory for all results
-    results_dir = os.path.join(input_output_folder, "results", f"results_{n_features}_{timestamp}")
+    results_dir = os.path.join(input_output_folder, "results", f"results_{n_features}_features_{seed}_seed_{timestamp}")
     os.makedirs(results_dir, exist_ok=True)
     abs_path = os.path.abspath(results_dir)
 
@@ -64,7 +64,7 @@ def main():
     # Define the path for the metrics log
     metrics_path = os.path.join(abs_path, f"metrics.log")
 
-    paths = {"abs_path": abs_path, "acc_path": acc_path, "metrics_path": metrics_path}
+    paths = {"abs_path": abs_path, "acc_path": acc_path, "metrics_path": metrics_path, "data_path": data_path}
 
     # Define the path for saving chart results
     charts_dir = os.path.join(abs_path, "charts")
@@ -93,7 +93,7 @@ def main():
         
         # Log dataset name and define dataset path
         log_to_file(f"\n--- Results for: {cancer_type} ---", acc_path)
-        dataset_path = os.path.join(folder, file_path)
+        dataset_path = os.path.join(processed_path, file_path)
 
         # Load dataset
         df = pd.read_csv(dataset_path, header=None)
@@ -139,6 +139,7 @@ def main():
             logits_active,
             save_selected_features,
             paths,
+            seed,
         )
 
         # Store results
