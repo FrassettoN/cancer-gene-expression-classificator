@@ -1,6 +1,7 @@
 __pycache__
 data/processed/*
 results/
+fc_kan/FC-KAN_dog_bs_sum_results
 
 # Momentarily
 requirements_env.txt
