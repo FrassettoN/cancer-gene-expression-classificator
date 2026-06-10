@@ -1,11 +1,9 @@
 __pycache__
+.venv
 data/processed/*
-results/
-fc_kan/FC-KAN_dog_bs_sum_results
 
-# Momentarily
-fusion_models.py 
-ReadMe.md
+# Results
+results/
 
 # R
 renv/
