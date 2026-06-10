@@ -10,9 +10,9 @@ import torch
 import torch.nn as nn
 from sklearn.metrics import roc_auc_score
 
-from cli import cli
+from utils.cli import cli
 from utils.logger import log_to_file
-from plots import roc_plot, accuracy_bar_chart
+from utils.plots import roc_plot, accuracy_bar_chart
 from evaluate_model import evaluate_models_cv
 
 

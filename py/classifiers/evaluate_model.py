@@ -26,7 +26,7 @@ from utils import (
     neighbor_informed_gene_expression,
 )
 from utils.logger import log_to_file, suppress_output, restore_output
-from process_fold import process_fold
+from utils.process_fold import process_fold
 
 
 def load_model(model_name, input_dim, num_classes, config):
