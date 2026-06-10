@@ -54,7 +54,12 @@ def main():
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
     # Base directory for all results
-    results_dir = os.path.join(input_output_folder, "results", f"results_{n_features}_features_{seed}_seed_{timestamp}")
+    if n_features == 10000:
+        n_features_str = "10k"
+    else:
+        n_features_str = n_features
+    results_dir = os.path.join(input_output_folder, "results", 
+    f"Ensemble_f{n_features_str}_s{seed}_{timestamp}")
     os.makedirs(results_dir, exist_ok=True)
     abs_path = os.path.abspath(results_dir)
 

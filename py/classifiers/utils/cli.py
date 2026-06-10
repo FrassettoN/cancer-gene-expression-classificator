@@ -15,7 +15,7 @@ def cli():
         "--input_output_folder",
         type=str,
         default="../../",
-        help="Base project folder containing `data/processed`. `results/` will be created, if necessary, under this folder.",
+        help="Base project folder containing `data/processed`. `results/` will be create under this folder.",
     )
     parser.add_argument(
         "-s",
