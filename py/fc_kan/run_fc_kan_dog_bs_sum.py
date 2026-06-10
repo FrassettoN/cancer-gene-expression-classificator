@@ -12,14 +12,15 @@ The model uses:
 Results are saved per fold with logits and true labels, plus summary.json.
 
 Usage examples:
-  python run_fc_kan_dog_bs_sum_clean.py --cancer "Bladder Urothelial Carcinoma" --gse GSE13507 --mode 10k
-  python run_fc_kan_dog_bs_sum_clean.py --cancer "Bladder Urothelial Carcinoma" --gse GSE13507 --mode 30
-  python run_fc_kan_dog_bs_sum_clean.py --all --mode 10k
+  python run_fc_kan_dog_bs_sum.py --cancer "Bladder Urothelial Carcinoma" --gse GSE13507 --mode 10k
+  python run_fc_kan_dog_bs_sum.py --cancer "Bladder Urothelial Carcinoma" --gse GSE13507 --mode 30
+  python run_fc_kan_dog_bs_sum.py --all --mode 10k
 """
 
 import argparse
 import json
 from pathlib import Path
+from datetime import datetime
 from typing import Dict, List, Optional, Tuple
 
 import numpy as np
@@ -277,10 +278,10 @@ def main() -> None:
     parser.add_argument("--gse", help="GSE code, e.g. GSE13507")
     parser.add_argument("--mode", choices=["10k", "30"], default="10k", help="Feature mode")
     parser.add_argument("--all", action="store_true", help="Run all datasets")
-    parser.add_argument("--splits-dir", type=Path, default=Path("../data/splits/kfold"), help="Directory containing split files")
-    parser.add_argument("--datasets-dir", type=Path, default=Path("../data/processed"), help="Directory containing dataset CSV files")
+    parser.add_argument("--splits-dir", type=Path, default=Path("../../data/splits/kfold"), help="Directory containing split files")
+    parser.add_argument("--datasets-dir", type=Path, default=Path("../../data/processed"), help="Directory containing dataset CSV files")
     parser.add_argument("--selected-features-dir", type=Path, default=Path("selected_features"), help="Directory containing selected features files")
-    parser.add_argument("--output-dir", type=Path, default=Path("FC-KAN_dog_bs_sum_results"), help="Output directory")
+    parser.add_argument("--output-dir", type=Path, default=Path("../../results/"), help="Output directory")
     parser.add_argument("--epochs", type=int, default=50)
     parser.add_argument("--batch-size", type=int, default=32)
     parser.add_argument("--lr", type=float, default=1e-3)
@@ -308,11 +309,17 @@ def main() -> None:
         print("Error: Either specify --cancer and --gse, or use --all")
         return
 
-    base_out = args.output_dir
-    out_10k = base_out / "10k_features"
-    out_30 = base_out / "30_features"
-    out_10k.mkdir(parents=True, exist_ok=True)
-    out_30.mkdir(parents=True, exist_ok=True)
+    output_dir = args.output_dir
+    mode = args.mode
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    run_dir = Path(f"FCKAN_f{mode}_{timestamp}")
+    base_dir = output_dir / run_dir
+    base_dir.mkdir(parents=True, exist_ok=True)
+    logits_dir = base_dir / Path("logits")
+    logits_dir.mkdir(parents=True, exist_ok=True)
+    summary_dir = base_dir / Path("summary")
+    summary_dir.mkdir(parents=True, exist_ok=True)
+    
 
     for cancer, gse in cancers_to_process:
         print("=" * 70)
@@ -361,15 +368,8 @@ def main() -> None:
 
         print(f"Folds={len(splits)}")
 
-        # Process specified mode
-        mode = args.mode
-            
         print(f"- Running {mode} features...")
-        folder_slug = cancer.lower().replace(" ", "_")
-        if mode == "10k" and gse:
-            folder_slug = f"{folder_slug}_{gse.lower()}"
-        
-        target_dir = (out_10k if mode == "10k" else out_30) / folder_slug / config_name
+        target_dir = logits_dir / cancer 
         target_dir.mkdir(parents=True, exist_ok=True)
         
         fold_records = []
@@ -438,14 +438,14 @@ def main() -> None:
                 for fr in fold_records
             ],
         }
-        with open(target_dir / "summary.json", "w") as f:
+        with open(summary_dir / f"{cancer}_summary.json", "w") as f:
             json.dump(summary, f, indent=2)
 
         print(f"  Completed: {cancer}\n")
     
     print("=" * 70)
     print("All datasets completed!")
-    print(f"Results saved to: {base_out}")
+    print(f"Results saved to: {base_dir}")
 
 
 if __name__ == "__main__":

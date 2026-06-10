@@ -6,10 +6,6 @@ import torch
 import numpy as np
 # sin, cos, arctan, relu, leaky relu, swish, mnish, elu, softplus, sigmoid, hard_sigmoid, gelup
 
-import torch
-import numpy as np
-
-
 def lsin(x, k):
     return k * torch.sin(x)
 
