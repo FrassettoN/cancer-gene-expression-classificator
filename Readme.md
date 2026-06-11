@@ -19,22 +19,32 @@ This repository contains code and tools for pan-cancer data classification using
     - `evaluate_model.py` – Trains and evaluates classifiers (SVM and neural nets); saves logits and selected features; returns per-model loss, accuracy, and SEM.
     - `main.py` – Orchestrates end-to-end experiments: loads `configs.yaml` and datasets, sets up results and logs, runs cross-validated evaluation per dataset, and saves aggregated logits, metrics, ROC plots, and summary charts.
     - `configs.yaml` – Specifies datasets, feature counts, and per-model hyperparameters.
-  - `fc_kan/` – Fully Connected KAN classification pipeline.
+  - `fc_kan/` – Fully Connected KAN classification pipeline. SE
 - `R/` – R-based classifiers.
   - `renv.lock` – renv environment snapshot.
   - `HMCC/` – Ensemble feature selection and classification (Rahaman et al., 2025; [doi:10.1016/j.compbiomed.2025.110687](https://doi.org/10.1016/j.compbiomed.2025.110687)).
     - `feature_selection.r` – HMCC ensemble feature-selection implementation.
     - `classification.r` – Classification pipeline using HMCC-selected features; supports SVM and Random Forest.
 
+## Results Placeholder
+The following placeholders appear in results directory structures throughout this document:
+
+| Placeholder | Description |
+|---|---|
+| `{dataset}` | Dataset name as defined in `configs.yaml` (e.g. `Stomach adenocarcinoma`) |
+| `{model}` | Model name (e.g. `SVM`, `CNN-1D`, `MLP`, `BaseKAN`) |
+| `{fold}` | Cross-validation fold index |
+| `{timestamp}` | Run timestamp in `YYYYMMDD_HHMMSS` format |
+| `{n_features}` | Number of selected features as set in `configs.yaml` |
+| `{seed}` | Random seed passed via `--seed` (default: `42`) |
+| `{mode}` | FC KAN feature mode (`10k` or `30`) |
 
 ## Requirements
 
 - **Python 3.12** – See [requirements.txt](requirements.txt); PyTorch and Torchvision must be installed separately.
 - **R** – See [renv.lock](R/renv.lock).
 
-## Setup
-
-### Python - for Ensemble and FC_KAN
+## Python Setup - for Ensemble and FC_KAN
 
 1. Create and activate a virtual environment:
    ```sh
@@ -68,11 +78,11 @@ Results are saved to `{input_output_folder}/results/Ensemble_{n_features}_s{seed
 Structure:
 - `charts/`
 - `logits/`
-  - `{Dataset}/`
-    - `{Model}/`
-      - `logits_{Dataset}_{fold}_{model}.txt`
-- `selected Features/`
-  - `selected_features_{Dataset}_{fold}.txt`
+  - `{dataset}/`
+    - `{model}/`
+      - `logits_{dataset}_{fold}_{model}.txt`
+- `selected_features/`
+  - `selected_features_{dataset}_{fold}.txt`
 
 ## FC KAN - Usage
 
@@ -102,10 +112,10 @@ Results are saved to the directory specified by `--output-dir`. By default, a fo
 
 Structure:
 - `logits/`
-  - `{Dataset}/`
+  - `{dataset}/`
       - `fold_{fold}.txt`
 - `summary/`
-  - `{Dataset}_summary.json`
+  - `{dataset}_summary.json`
 
 ## HMCC - Setup and Usage
 
@@ -120,7 +130,7 @@ A folder named `HMCC_{timestamp}` is created inside `results/`.
 
 Structure:
 - `logits/`
-  - `{Dataset}/`
+  - `{dataset}/`
       - `RF`
         - `fold_{fold}.txt`
       - `SVMR`
@@ -129,7 +139,7 @@ Structure:
 
 
 ## Test Environment
-
+Experiments were run on the following hardware:
 | | |
 |---|---|
 | **OS** | Ubuntu 24.04.4 LTS |
