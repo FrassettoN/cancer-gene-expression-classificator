@@ -116,7 +116,7 @@ for (cancer in names(CANCER_TO_GSE)) {
   )
 
   n_feat <- ncol(df) - 1
-  colnames(df) <- c("label", paste0("gene_", seq_len(n_feat)))
+  colnames(df) <- c("label", paste0("gene_", 0:(n_feat - 1)))
   df$sample_id <- paste0("sample_", seq_len(nrow(df)))
 
   folds <- read_kfold_txt(split_path)
@@ -172,7 +172,7 @@ for (cancer in names(CANCER_TO_GSE)) {
 
     selected_cancer_out = file.path(features_out, cancer)
     dir.create(selected_cancer_out, showWarnings = FALSE, recursive = TRUE)
-    out_file <- file.path(selected_cancer_out, sprintf("selected_features_%02d.txt", k))
+    out_file <- file.path(selected_cancer_out, sprintf("selected_features_%d.txt", k))
     selected_ids <- ifelse(grepl("^gene_", selected_genes),
       sub("^gene_", "", selected_genes),
       selected_genes
