@@ -127,8 +127,13 @@ Structure:
 - `summary/`
   - `{dataset}_summary.json`
 
-## HMCC - Setup and Usage
+## HMCC
+**Paper:** Rahaman et al. · [doi:10.1016/j.compbiomed.2025.110687](https://doi.org/10.1016/j.compbiomed.2025.110687)  
+**Repository:** [BandhanSarker/HMCC](https://github.com/BandhanSarker/HMCC)  
 
+Feature selection combines LIMMA, SAM, ANOVA, KW-test, and t-test; classification uses Random Forest. On TCGA datasets the t-test is not functional.
+
+### Setup and Usage
 ```sh
 Rscript --vanilla -e "install.packages('renv', repos = 'https://cloud.r-project.org')"
 Rscript -e "renv::init(bare = TRUE); renv::restore(lockfile = 'R/renv.lock')"
