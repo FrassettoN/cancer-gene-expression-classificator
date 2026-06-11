@@ -72,7 +72,14 @@ python main.py
 |---|---|---|---|
 | `-c, --configs` | str | `configs.yaml` | Path to YAML config file (datasets, feature counts, models). |
 | `-f, --input_output_folder` | str | `../../` | Base project folder containing `data/`; results are saved here. |
-| `-s, --seed` | int | `42` | Random seed for reproducibility. |
+| `-s, --seed` | int | `42` | Random seed for reproducibility; used by Random Forest during feature selection and by classification methods. |
+
+### Run with 3 seeds
+To automatically run three experiments using seeds 42, 1000, and 12345, execute:
+```sh
+cd py/ensemble/
+bash run_seeds.sh
+```
 
 ### Results
 
