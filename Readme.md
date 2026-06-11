@@ -45,7 +45,7 @@ The following placeholders appear in results directory structures throughout thi
 ## Requirements
 
 - **Python 3.12** – See [requirements.txt](requirements.txt); PyTorch and Torchvision must be installed separately.
-- **R** – See [renv.lock](R/renv.lock).
+- **R 4.5.2** – See [renv.lock](R/renv.lock).
 
 ## Python Setup - for Ensemble and FC_KAN
 
