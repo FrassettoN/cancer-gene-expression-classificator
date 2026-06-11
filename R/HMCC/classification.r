@@ -1,4 +1,4 @@
-renv::activate()
+source("renv/activate.R")
 source("R/HMCC/features_selection.r")
 
 # Build all folds
@@ -84,11 +84,11 @@ CANCER_TO_GSE <- c(
 )
 
 timestamp <- format(Sys.time(), "%Y%m%d_%H%M%S")
-root_out <- file.path("results", paste0("results_HMCC_", timestamp))
+root_out <- file.path("results", paste0("HMCC_", timestamp))
 dir.create(root_out, showWarnings = FALSE, recursive = TRUE)
 logits_out <- file.path(root_out, "logits")
 dir.create(logits_out, showWarnings = FALSE, recursive = TRUE)
-features_out <-  file.path(root_out, "selected_features")
+features_out <- file.path(root_out, "selected_features")
 dir.create(features_out, showWarnings = FALSE, recursive = TRUE)
 
 for (cancer in names(CANCER_TO_GSE)) {
@@ -167,20 +167,21 @@ for (cancer in names(CANCER_TO_GSE)) {
       top.df <- GS(train_for_gs, n_groups = n_groups, N_top = 30)
     }
 
+    # Genes selected by GS (columns used for training)
+    selected_genes <- setdiff(colnames(top.df), "DataLabels")
+
     selected_cancer_out = file.path(features_out, cancer)
     dir.create(selected_cancer_out, showWarnings = FALSE, recursive = TRUE)
     out_file <- file.path(selected_cancer_out, sprintf("selected_features_%02d.txt", k))
     selected_ids <- ifelse(grepl("^gene_", selected_genes),
-                       sub("^gene_", "", selected_genes),
-                       selected_genes)
+      sub("^gene_", "", selected_genes),
+      selected_genes
+    )
     writeLines(selected_ids, con = out_file)
 
     # Classification
     attach(top.df)
     x <- subset(top.df, select = -DataLabels)
-
-    # Genes selected by GS (columns used for training)
-    selected_genes <- setdiff(colnames(top.df), "DataLabels")
 
     # Build test set with exactly the same feature columns/order
     X_test_full <- fold_sets[[k]]$test$X
@@ -211,8 +212,9 @@ for (cancer in names(CANCER_TO_GSE)) {
     )
 
     write.table(as.data.frame(pred_prob),
-            file = file.path(RF_out, sprintf("logits_%s_%d_RF.txt", cancer, k)),
-            row.names = FALSE, col.names = FALSE, sep = " ")
+      file = file.path(RF_out, sprintf("logits_%s_%d_RF.txt", cancer, k)),
+      row.names = FALSE, col.names = FALSE, sep = " "
+    )
 
     # SVM-RBF (e1071)
     model.svmr <- svm(
@@ -230,7 +232,8 @@ for (cancer in names(CANCER_TO_GSE)) {
     message(sprintf("Fold %02d | %s | SVM-r accuracy=%.4f", k, gse, svm_acc))
 
     write.table(as.data.frame(svm_pred_prob),
-                file = file.path(SVMR_out, sprintf("logits_%s_%d_SVMR.txt", cancer, k)),
-                row.names = FALSE, col.names = FALSE, sep = " ")
+      file = file.path(SVMR_out, sprintf("logits_%s_%d_SVMR.txt", cancer, k)),
+      row.names = FALSE, col.names = FALSE, sep = " "
+    )
   }
 }
