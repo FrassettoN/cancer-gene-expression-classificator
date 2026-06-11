@@ -74,7 +74,7 @@ python main.py
 | `-f, --input_output_folder` | str | `../../` | Base project folder containing `data/`; results are saved here. |
 | `-s, --seed` | int | `42` | Random seed for reproducibility; used by Random Forest during feature selection and by classification methods. |
 
-### Run with 3 seeds
+### Run experiments with three seeds
 To automatically run three experiments using seeds 42, 1000, and 12345, execute:
 ```sh
 cd py/ensemble/
