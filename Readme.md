@@ -21,7 +21,7 @@ This repository contains code and tools for pan-cancer data classification using
     - `evaluate_model.py` – Trains and evaluates classifiers (SVM and neural nets); saves logits and selected features; returns per-model loss, accuracy, and SEM.
     - `main.py` – Orchestrates end-to-end experiments: loads `configs.yaml` and datasets, sets up results and logs, runs cross-validated evaluation per dataset, and saves aggregated logits, metrics, ROC plots, and summary charts.
     - `configs.yaml` – Specifies datasets, feature counts, and per-model hyperparameters.
-    - `run_seeds.sh` — Script that runs `main.py` using random seeds 42, 1000, and 12345.
+    - `run_seeds.sh` — Script that runs `main.py` for one or more seeds passed after -s (e.g., bash run_seeds.sh -s 42 1000 12345)
   - `fc_kan/` – Fully Connected KAN classification pipeline. SE
 - `R/` – R-based classifiers.
   - `renv.lock` – renv environment snapshot.
