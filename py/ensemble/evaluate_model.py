@@ -57,27 +57,6 @@ def load_model(model_name, input_dim, num_classes, config):
             grid_size=grid_size,
             spline_order=spline_order,
         )
-
-    elif model_name == "ViT":
-        patch_size = getattr(config, "patch_size", 8)
-        image_size = getattr(config, "image_size", 64)
-        num_layers = getattr(config, "num_layers", 4)
-        embedding_dim = getattr(config, "embedding_dim", 2096)
-        num_heads = getattr(config, "num_heads", 8)
-        hidden_dim = getattr(config, "hidden_dim", 2096)
-        dropout_prob = getattr(config, "dropout_prob", 0.1)
-
-        model = VisionTransformer(
-            patch_size=patch_size,
-            image_size=64,
-            C=input_dim,
-            num_layers=4,
-            embedding_dim=2096,
-            num_heads=8,
-            hidden_dim=2096,
-            dropout_prob=0.1,
-            num_classes=num_classes,
-        )
     else:
         raise ValueError(f"Model '{model_name}' is not supported")
 
@@ -323,10 +302,10 @@ def evaluate_models_cv(
                     features_save_path, np.array(selected_feature_indices), fmt="%d"
                 )
 
-            if model_name in ["DI-CNN+", "ViT", "IT-KAN"]:
+            if model_name in ["DI-CNN+", "IT-KAN"]:
 
                 # Improved DeepInsight with channel wise expansion (apply the channel expansion function to both the training and test sets)
-                if model_name in ["DI-CNN+", "ViT"]:
+                if model_name in ["DI-CNN+"]:
                     X_train_scaled = channel_expansion(it, X_train_scaled)  # img_train
                     X_test_scaled = channel_expansion(it, X_test_scaled)  # img_test
 
@@ -386,12 +365,6 @@ def evaluate_models_cv(
                     device
                 )
                 y_test_tensor = torch.tensor(y_test, dtype=torch.long).to(device)
-
-                if model_name == "ViT":
-
-                    # Rearrange the dimensions of the tensors: (batch_size, height, width, channels) to (batch_size, channels, height, width)
-                    X_train_tensor = X_train_tensor.permute(0, 3, 1, 2)
-                    X_test_tensor = X_test_tensor.permute(0, 3, 1, 2)
 
                 # Creating DataSets
                 train_dataset = TensorDataset(X_train_tensor, y_train_tensor)
@@ -453,9 +426,8 @@ def evaluate_models_cv(
 
                 # Load model
                 input_dim = num_features
-                if model_name == "ViT":
-                    input_dim = X_train_tensor.shape[1]
-                elif model_name == "DI-CNN+":
+
+                if model_name == "DI-CNN+":
                     input_dim = X_train_scaled.shape[1]
 
                 model = load_model(model_name, input_dim, num_classes, config)
