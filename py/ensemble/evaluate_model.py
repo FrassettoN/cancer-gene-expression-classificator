@@ -242,8 +242,8 @@ def evaluate_models_cv(
 
     for model_name in models:
         set_seed(classificator_seed)
-        log_to_file(f"Classificator_seed: {classificator_seed}", acc_path)
-        log_to_file(f"\nModel: {model_name}", acc_path)
+        log_to_file(f"\nClassificator_seed: {classificator_seed}", acc_path)
+        log_to_file(f"Model: {model_name}", acc_path)
 
         # Parameters
         config_dict = model_configs.get(model_name)
