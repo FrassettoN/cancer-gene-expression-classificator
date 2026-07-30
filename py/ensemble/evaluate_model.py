@@ -3,6 +3,7 @@ import os
 import numpy as np
 import torch
 import torch.nn as nn
+import time
 
 from types import SimpleNamespace
 from sklearn.model_selection import LeaveOneOut, StratifiedKFold
@@ -153,6 +154,7 @@ def evaluate_models_cv(
     save_selected_features,
     paths,
     seed,
+    time_start
 ):
     n_features = configs["n_features"]
     model_configs = configs["models"]
@@ -239,8 +241,14 @@ def evaluate_models_cv(
         delayed(process_fold)(n_features, train_idx, test_idx, features, labels, device, fs_seed)
         for train_idx, test_idx in splits_array
     )
+    fs_elapsed = time.perf_counter() - time_start
+    log_to_file(f"Shared fold preparation time: {fs_elapsed:.2f} seconds", acc_path)
+
+
 
     for model_name in models:
+        model_start = time.perf_counter()
+
         set_seed(classificator_seed)
         log_to_file(f"\nClassificator_seed: {classificator_seed}", acc_path)
         log_to_file(f"Model: {model_name}", acc_path)
@@ -483,6 +491,7 @@ def evaluate_models_cv(
                 # Clear the GPU cache to free up memory on the GPU
                 torch.cuda.empty_cache()
 
+
         # Compute average accuracy for the model
         avg_accuracy[model_name] = sum(accuracy_eval[model_name]) / len(
             accuracy_eval[model_name]
@@ -494,5 +503,12 @@ def evaluate_models_cv(
 
         # Compute average loss for the model
         avg_loss[model_name] = sum(loss_eval[model_name]) / len(loss_eval[model_name])
+
+        model_elapsed = time.perf_counter() - model_start
+        model_total = model_elapsed + fs_elapsed
+        log_to_file(
+            f"Elapsed time for {model_name}: {model_elapsed} seconds. Total {model_total}",
+            acc_path,
+        )
 
     return avg_loss, avg_accuracy, sem

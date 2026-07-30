@@ -1,6 +1,7 @@
 __pycache__
 .venv
 data/processed/*.csv
+data/count.py
 !data/processed/.gitkeep
 
 # Results

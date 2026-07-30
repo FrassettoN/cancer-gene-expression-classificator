@@ -2,6 +2,7 @@ import os
 import subprocess
 import yaml
 import multiprocessing
+import time
 from datetime import datetime
 
 import numpy as np
@@ -23,6 +24,7 @@ def softmax(logits):
 
 
 def main():
+    time_start = time.perf_counter()
     configs_path, input_output_folder, seed = cli()
 
     data_path = os.path.join(input_output_folder, "data")
@@ -131,7 +133,6 @@ def main():
             torch.unique(torch.tensor(labels))
         )  # Number of unique classes in the labels
 
-        # Evaluate Models with Leave-One-Out Cross-Validation
         avg_loss, avg_accuracy, sem = evaluate_models_cv(
             models,
             configs,
@@ -145,6 +146,7 @@ def main():
             save_selected_features,
             paths,
             seed,
+            time_start,
         )
 
         # Store results

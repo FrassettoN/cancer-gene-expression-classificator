@@ -1,6 +1,9 @@
 source("renv/activate.R")
 source("R/HMCC/features_selection.r")
 
+script_start <- Sys.time()
+message("Script started at: ", format(script_start, "%Y-%m-%d %H:%M:%S"))
+
 # Build all folds
 # Read the k-fold split file
 read_kfold_txt <- function(path) {
@@ -64,23 +67,23 @@ order_by_label <- function(X, y, class_order = c(0, 1)) {
 
 
 CANCER_TO_GSE <- c(
-  "Bladder Urothelial Carcinoma" = "GSE13507",
-  "Breast invasive carcinoma cancer" = "GSE39004",
-  "Breast cancer TCGA" = "TCGA-BRCA",
-  "Colon adenocarcinoma" = "GSE41657",
-  "Esophageal carcinoma" = "GSE20347",
-  "Head and Neck squamous cell carcinoma" = "GSE6631",
-  "Kidney Chromophobe" = "GSE15641_1",
-  "Kidney renal clear cell carcinoma" = "GSE15641_2",
-  "Kidney renal papillary cell carcinoma" = "GSE15641_3",
-  "Liver hepatocellular carcinoma" = "GSE45267",
-  "Lung squamous cell carcinoma" = "GSE33479",
-  "Lung adenocarcinoma" = "GSE10072",
-  "Prostate adenocarcinoma" = "GSE6919",
-  "Rectum adenocarcinoma" = "GSE20842",
-  "Stomach adenocarcinoma" = "GSE2685",
-  "Thyroid carcinoma" = "GSE33630",
-  "Uterine Corpus Endometrial Carcinoma" = "GSE17025"
+  # "Bladder Urothelial Carcinoma" = "GSE13507",
+  # "Breast invasive carcinoma cancer" = "GSE39004",
+  # "Breast cancer TCGA" = "TCGA-BRCA",
+  # "Colon adenocarcinoma" = "GSE41657",
+  # "Esophageal carcinoma" = "GSE20347",
+  # "Head and Neck squamous cell carcinoma" = "GSE6631",
+  "Kidney Chromophobe" = "GSE15641_1"
+  # "Kidney renal clear cell carcinoma" = "GSE15641_2",
+  # "Kidney renal papillary cell carcinoma" = "GSE15641_3",
+  # "Liver hepatocellular carcinoma" = "GSE45267",
+  # "Lung squamous cell carcinoma" = "GSE33479",
+  # "Lung adenocarcinoma" = "GSE10072",
+  # "Prostate adenocarcinoma" = "GSE6919",
+  # "Rectum adenocarcinoma" = "GSE20842",
+  # "Stomach adenocarcinoma" = "GSE2685",
+  # "Thyroid carcinoma" = "GSE33630",
+  # "Uterine Corpus Endometrial Carcinoma" = "GSE17025"
 )
 
 timestamp <- format(Sys.time(), "%Y%m%d_%H%M%S")
@@ -92,6 +95,7 @@ features_out <- file.path(root_out, "selected_features")
 dir.create(features_out, showWarnings = FALSE, recursive = TRUE)
 
 for (cancer in names(CANCER_TO_GSE)) {
+  cancer_start <- Sys.time()
   gse <- CANCER_TO_GSE[[cancer]]
 
   dataset_path <- file.path("data/processed", paste0(gse, "_trasp_mod.csv"))
@@ -170,7 +174,7 @@ for (cancer in names(CANCER_TO_GSE)) {
     # Genes selected by GS (columns used for training)
     selected_genes <- setdiff(colnames(top.df), "DataLabels")
 
-    selected_cancer_out = file.path(features_out, cancer)
+    selected_cancer_out <- file.path(features_out, cancer)
     dir.create(selected_cancer_out, showWarnings = FALSE, recursive = TRUE)
     out_file <- file.path(selected_cancer_out, sprintf("selected_features_%d.txt", k))
     selected_ids <- ifelse(grepl("^gene_", selected_genes),
@@ -216,24 +220,34 @@ for (cancer in names(CANCER_TO_GSE)) {
       row.names = FALSE, col.names = FALSE, sep = " "
     )
 
-    # SVM-RBF (e1071)
-    model.svmr <- svm(
-      DataLabels ~ .,
-      data = top.df,
-      kernel = "radial",
-      probability = TRUE
-    )
+    # # SVM-RBF (e1071)
+    # model.svmr <- svm(
+    #   DataLabels ~ .,
+    #   data = top.df,
+    #   kernel = "radial",
+    #   probability = TRUE
+    # )
 
-    # Predict class and probabilities on test fold
-    svm_pred_class <- predict(model.svmr, newdata = X_test_top, probability = TRUE)
-    svm_pred_prob <- attr(svm_pred_class, "probabilities")
+    # # Predict class and probabilities on test fold
+    # svm_pred_class <- predict(model.svmr, newdata = X_test_top, probability = TRUE)
+    # svm_pred_prob <- attr(svm_pred_class, "probabilities")
 
-    svm_acc <- mean(svm_pred_class == y_test_gs)
-    message(sprintf("Fold %02d | %s | SVM-r accuracy=%.4f", k, gse, svm_acc))
+    # svm_acc <- mean(svm_pred_class == y_test_gs)
+    # message(sprintf("Fold %02d | %s | SVM-r accuracy=%.4f", k, gse, svm_acc))
 
-    write.table(as.data.frame(svm_pred_prob),
-      file = file.path(SVMR_out, sprintf("logits_%s_%d_SVMR.txt", cancer, k)),
-      row.names = FALSE, col.names = FALSE, sep = " "
-    )
+    # write.table(as.data.frame(svm_pred_prob),
+    #   file = file.path(SVMR_out, sprintf("logits_%s_%d_SVMR.txt", cancer, k)),
+    #   row.names = FALSE, col.names = FALSE, sep = " "
+    # )
   }
+
+  message(sprintf(
+    "Finished %s | elapsed=%.2f sec",
+    cancer, as.numeric(difftime(Sys.time(), cancer_start, units = "secs"))
+  ))
 }
+
+message(sprintf(
+  "Total script runtime: %.2f sec",
+  as.numeric(difftime(Sys.time(), script_start, units = "secs"))
+))
