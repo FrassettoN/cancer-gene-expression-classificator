@@ -174,6 +174,8 @@ def main():
                 )
         log_to_file("", acc_path)
 
+    elapsed_time = time.perf_counter() - time_start
+    log_to_file(f"Total_elapsed_time: {elapsed_time:.2f} seconds", acc_path)
     print(f"The accuracy results have been saved as 'accuracies.log' in: {abs_path}")
 
     # ---- Metrics part ----
